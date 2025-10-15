@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QMessageBox
 from PyQt5 import uic, QtCore
+from PyQt5.QtGui import QColor
 from settings_interface import SettingsWindow, SettingsTgWindow
 from instruction_interface import InstructionWindow
 from rent_interface import RentWindow
@@ -149,8 +150,12 @@ class Window(QMainWindow):
         self.tableWidget.setColumnCount(info[1])
         self.tableWidget.setHorizontalHeaderLabels(info[2])
         # print(info, items)
-        for index, index_col, item in items:
+        for index, index_col, item, rented in items:
             self.tableWidget.setItem(index, index_col, QTableWidgetItem(item))
+            item = self.tableWidget.item(index, index_col)
+            if rented > 0:
+                item.setBackground(QColor(255, 92, 92))
+                item.setToolTip(f'В аренде: {rented} ед.')
         self.tableWidget.setColumnWidth(4, 180)
         self.tableWidget.setColumnWidth(5, 150)
 

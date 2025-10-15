@@ -178,7 +178,7 @@ class Service:
         # Находим или создаем должника
         debtor = self._execute_query(
             "SELECT id FROM debtors WHERE name=?",
-            (name,), fetch=True
+            (name.capitalize(),), fetch=True
         )
 
         if not debtor:
@@ -241,7 +241,7 @@ class Service:
         # Находим должника
         debtor = self._execute_query(
             "SELECT id FROM debtors WHERE name=?",
-            (name,), fetch=True
+            (name.capitalize(),), fetch=True
         )
 
         if not debtor:
@@ -308,6 +308,10 @@ class Service:
         else:
             tools = self._execute_query("SELECT * FROM tools", fetch=True)
 
+        query = "SELECT tool_id, sum(quantity) from rent where is_done=0 group by tool_id"
+
+        rented_ids = dict(self._execute_query(query, fetch=True))
+
         if not tools:
             return (0, 0, []), []
 
@@ -315,8 +319,12 @@ class Service:
                    "Место", "Последнее использование", "Заметки"]
         items = []
         for row_idx, row in enumerate(tools):
+            rented = rented_ids.get(row[0], 0)
             for col_idx, value in enumerate(row):
-                items.append((row_idx, col_idx, str(value)))
+                if col_idx == 1 and rented != 0:
+                    items.append((row_idx, col_idx, str(value), rented))
+                else:
+                    items.append((row_idx, col_idx, str(value), 0))
 
         return (len(tools), len(columns), columns), items
     
