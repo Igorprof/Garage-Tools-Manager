@@ -251,14 +251,14 @@ class Service:
 
         # Находим инструмент
         tool = self._execute_query(
-            "SELECT id FROM tools WHERE name LIKE ? AND size=?",
+            "SELECT id, quantity FROM tools WHERE name LIKE ? AND size=?",
             (f'%{good}%', str(size)), fetch=True
         )
 
         if not tool:
             return Commands.ERROR_NOT_FOUND
 
-        tool_id = tool[0][0]
+        tool_id, tool_quantity = tool[0]
 
         # Находим активную аренду
         rent = self._execute_query(
@@ -275,6 +275,12 @@ class Service:
         self._execute_query(
             "UPDATE rent SET end_time=?, is_done=1 WHERE id=?",
             (self.now(), rent_id),
+            commit=True
+        )
+
+        self._execute_query(
+            "UPDATE tools SET quantity=? WHERE id=?",
+            (tool_quantity + rent_quantity, tool_id),
             commit=True
         )
         return 'Возврат совершен'
