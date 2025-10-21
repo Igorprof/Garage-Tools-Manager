@@ -273,8 +273,8 @@ class Service:
 
         # Помечаем аренду как завершенную
         self._execute_query(
-            "UPDATE rent SET end_time=?, is_done=1 WHERE id=?",
-            (self.now(), rent_id),
+            "DELETE FROM rent WHERE id=?",
+            (rent_id,),
             commit=True
         )
 
@@ -420,7 +420,7 @@ class Service:
         size_words = ['на', 'размер']
         quantity_words = ['количество', 'количества']
         location_words = ['место', 'вместо', 'места', 'локация']
-        client_words = ['клиент', 'имя', 'должник']
+        client_words = ['клиент', 'имя', 'должник', 'имени']
 
         good_phrase = []
         i = 0

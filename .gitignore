@@ -1,5 +1,6 @@
 __pycache__/
 images/
+sounds/*
 config.py
 img_forming.py
 test.py
